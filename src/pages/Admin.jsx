@@ -110,6 +110,14 @@ export default function Admin() {
     }
   }
 
+  const excluir = async (id) => {
+    if (!confirm('Deseja excluir esta ocorrência?')) return
+    const { error } = await supabase.from('ocorrencias').delete().eq('id', id)
+    if (!error) {
+      setOcorrencias(prev => prev.filter(o => o.id !== id))
+    }
+  }
+
   const total = ocorrencias.length
   const emAnalise = ocorrencias.filter(o => o.status === 'Em Análise').length
   const emAndamento = ocorrencias.filter(o => o.status === 'Em Andamento').length
@@ -246,6 +254,12 @@ export default function Admin() {
                   Resolvido
                 </button>
               </div>
+              <button className="btn-excluir" onClick={() => excluir(o.id)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
+                Excluir
+              </button>
             </div>
           ))
         )}

@@ -460,6 +460,29 @@ html, body {
 .btn-andamento { background: #ede9fe; color: #6366f1; }
 .btn-resolvido { background: #dcfce7; color: #16a34a; }
 
+.btn-excluir {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  background: #fff1f2;
+  color: #ef4444;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s;
+}
+
+.btn-excluir:hover {
+  opacity: 0.75;
+}
+
 /* Map placeholder */
 .map-placeholder {
   background: #f8f9fc;
