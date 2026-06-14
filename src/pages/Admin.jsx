@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
+const SENHA_ADMIN = 'samambaia2025'
 const CATEGORIAS = ['Descarte de Resíduos', 'Buraco/Calçada', 'Manutenção', 'Iluminação', 'Outros']
 
 function getBadgeClass(status) {
@@ -9,9 +10,79 @@ function getBadgeClass(status) {
   return 'badge badge-analise'
 }
 
+function LoginAdmin({ onLogin }) {
+  const [senha, setSenha] = useState('')
+  const [erro, setErro] = useState(false)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (senha === SENHA_ADMIN) {
+      sessionStorage.setItem('admin_auth', '1')
+      onLogin()
+    } else {
+      setErro(true)
+      setSenha('')
+    }
+  }
+
+  return (
+    <div className="page">
+      <div className="header">
+        <h1>Painel Admin</h1>
+        <p>Área restrita à administração</p>
+      </div>
+      <div className="card" style={{ marginTop: 32 }}>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="#6366f1">
+            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+          </svg>
+          <h2 style={{ marginTop: 12, marginBottom: 4 }}>Acesso Restrito</h2>
+          <p style={{ fontSize: 13, color: '#64748b' }}>Digite a senha para continuar</p>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Senha</label>
+            <input
+              type="password"
+              value={senha}
+              onChange={e => { setSenha(e.target.value); setErro(false) }}
+              placeholder="Digite a senha"
+              style={{
+                width: '100%',
+                border: `1.5px solid ${erro ? '#ef4444' : 'var(--border)'}`,
+                borderRadius: 10,
+                padding: '12px 14px',
+                fontSize: 15,
+                fontFamily: 'inherit',
+                outline: 'none'
+              }}
+              autoFocus
+            />
+            {erro && (
+              <p style={{ color: '#ef4444', fontSize: 13, marginTop: 6 }}>
+                Senha incorreta. Tente novamente.
+              </p>
+            )}
+          </div>
+          <button type="submit" className="btn-primary">
+            Entrar
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 export default function Admin() {
+  const [autenticado, setAutenticado] = useState(
+    sessionStorage.getItem('admin_auth') === '1'
+  )
   const [ocorrencias, setOcorrencias] = useState([])
   const [loading, setLoading] = useState(true)
+
+  if (!autenticado) {
+    return <LoginAdmin onLogin={() => setAutenticado(true)} />
+  }
 
   useEffect(() => {
     carregar()
@@ -51,6 +122,12 @@ export default function Admin() {
       <div className="header">
         <h1>Painel Admin</h1>
         <p>Gerencie todas as ocorrências</p>
+        <button
+          onClick={() => { sessionStorage.removeItem('admin_auth'); setAutenticado(false) }}
+          style={{ marginTop: 8, fontSize: 12, color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+        >
+          Sair
+        </button>
       </div>
 
       <div className="card">
